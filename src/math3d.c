@@ -6,7 +6,6 @@
 /// VEC3 IMPLEMENTATION
 /// ─────────────────────────────────────────────────────────────
 
-// Update spherical from Cartesian
 void vec3_update_spherical(vec3_t* v) {
     v->r = sqrtf(v->x * v->x + v->y * v->y + v->z * v->z);
     if (v->r == 0.0f) {
@@ -18,7 +17,6 @@ void vec3_update_spherical(vec3_t* v) {
     }
 }
 
-// Convert from spherical to Cartesian
 vec3_t vec3_from_spherical(float r, float theta, float phi) {
     vec3_t v;
 
@@ -33,7 +31,6 @@ vec3_t vec3_from_spherical(float r, float theta, float phi) {
     return v;
 }
 
-// Fast inverse square root (Quake trick)
 static float Q_rsqrt(float number) {
     union {
         float f;
@@ -46,7 +43,6 @@ static float Q_rsqrt(float number) {
     return conv.f;
 }
 
-// Normalize using fast inverse sqrt
 vec3_t vec3_normalize_fast(vec3_t v) {
     float len_sq = v.x * v.x + v.y * v.y + v.z * v.z;
     float inv_len = Q_rsqrt(len_sq);
@@ -59,29 +55,29 @@ vec3_t vec3_normalize_fast(vec3_t v) {
     return v;
 }
 
-// Spherical linear interpolation (SLERP)
 vec3_t vec3_slerp(vec3_t a, vec3_t b, float t) {
     a = vec3_normalize_fast(a);
     b = vec3_normalize_fast(b);
 
     float dot = a.x * b.x + a.y * b.y + a.z * b.z;
-
     if (dot > 1.0f) dot = 1.0f;
     if (dot < -1.0f) dot = -1.0f;
 
     float theta = acosf(dot) * t;
 
     vec3_t relative = {
-        b.x - a.x * dot,
-        b.y - a.y * dot,
-        b.z - a.z * dot
+        .x = b.x - a.x * dot,
+        .y = b.y - a.y * dot,
+        .z = b.z - a.z * dot,
+        .r = 0, .theta = 0, .phi = 0
     };
     relative = vec3_normalize_fast(relative);
 
     vec3_t result = {
-        a.x * cosf(theta) + relative.x * sinf(theta),
-        a.y * cosf(theta) + relative.y * sinf(theta),
-        a.z * cosf(theta) + relative.z * sinf(theta)
+        .x = a.x * cosf(theta) + relative.x * sinf(theta),
+        .y = a.y * cosf(theta) + relative.y * sinf(theta),
+        .z = a.z * cosf(theta) + relative.z * sinf(theta),
+        .r = 0, .theta = 0, .phi = 0
     };
     return result;
 }
@@ -90,14 +86,12 @@ vec3_t vec3_slerp(vec3_t a, vec3_t b, float t) {
 /// MAT4 IMPLEMENTATION
 /// ─────────────────────────────────────────────────────────────
 
-// Identity matrix
 mat4_t mat4_identity() {
     mat4_t m = {0};
     m.m[0] = m.m[5] = m.m[10] = m.m[15] = 1.0f;
     return m;
 }
 
-// Translation matrix
 mat4_t mat4_translate(float tx, float ty, float tz) {
     mat4_t m = mat4_identity();
     m.m[12] = tx;
@@ -106,7 +100,6 @@ mat4_t mat4_translate(float tx, float ty, float tz) {
     return m;
 }
 
-// Scaling matrix
 mat4_t mat4_scale(float sx, float sy, float sz) {
     mat4_t m = {0};
     m.m[0] = sx;
@@ -116,7 +109,6 @@ mat4_t mat4_scale(float sx, float sy, float sz) {
     return m;
 }
 
-// Rotation matrix for Euler angles (XYZ order)
 mat4_t mat4_rotate_xyz(float rx, float ry, float rz) {
     float cx = cosf(rx), sx = sinf(rx);
     float cy = cosf(ry), sy = sinf(ry);
@@ -138,7 +130,6 @@ mat4_t mat4_rotate_xyz(float rx, float ry, float rz) {
     return m;
 }
 
-// Asymmetric frustum projection matrix
 mat4_t mat4_frustum_asymmetric(float l, float r, float b, float t, float n, float f) {
     mat4_t m = {0};
 
@@ -151,4 +142,19 @@ mat4_t mat4_frustum_asymmetric(float l, float r, float b, float t, float n, floa
     m.m[14] = -(2 * f * n) / (f - n);
 
     return m;
+}
+
+vec3_t mat4_transform_vec3(mat4_t m, vec3_t v) {
+    vec3_t result;
+    float x = v.x, y = v.y, z = v.z;
+
+    float w = m.m[3] * x + m.m[7] * y + m.m[11] * z + m.m[15];
+    if (w == 0.0f) w = 1.0f;
+
+    result.x = (m.m[0] * x + m.m[4] * y + m.m[8]  * z + m.m[12]) / w;
+    result.y = (m.m[1] * x + m.m[5] * y + m.m[9]  * z + m.m[13]) / w;
+    result.z = (m.m[2] * x + m.m[6] * y + m.m[10] * z + m.m[14]) / w;
+
+    vec3_update_spherical(&result);
+    return result;
 }
