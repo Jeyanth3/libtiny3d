@@ -3,6 +3,8 @@
 #include <math.h>
 #include "canvas.h"
 
+#define M_PI 3.14159265358979323846
+
 // Function prototypes (defined in canvas.c)
 extern void set_pixel_f(Canvas* canvas, float x, float y, float intensity);
 extern void draw_line_f(Canvas* canvas, float x0, float y0, float x1, float y1, float thickness);
@@ -20,7 +22,7 @@ void save_canvas_to_pgm(Canvas* canvas, const char* filename) {
 
     for (int y = 0; y < canvas->height; ++y) {
         for (int x = 0; x < canvas->width; ++x) {
-            int value = (int)(canvas->pixels[y][x] * 255.0f); // convert to grayscale
+            int value = (int)((1.0f - canvas->pixels[y][x]) * 255.0f); // convert to grayscale
             fprintf(file, "%d ", value);
         }
         fprintf(file, "\n");
@@ -28,6 +30,7 @@ void save_canvas_to_pgm(Canvas* canvas, const char* filename) {
 
     fclose(file);
 }
+
 
 int main() {
     int width = 200;
@@ -42,7 +45,7 @@ int main() {
     float center_x = width / 2.0f;
     float center_y = height / 2.0f;
     float radius = 80.0f;
-    float thickness = 2.5f;
+    float thickness = 1.0f;
 
     // Draw radial lines every 15 degrees
     for (int angle = 0; angle < 360; angle += 15) {
@@ -52,7 +55,8 @@ int main() {
 
         draw_line_f(canvas, center_x, center_y, end_x, end_y, thickness);
     }
-
+    
+     
     // Save canvas to file
     save_canvas_to_pgm(canvas, "clock_lines.pgm");
     printf("Clock face saved to clock_lines.pgm\n");

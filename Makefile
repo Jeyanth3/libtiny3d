@@ -1,28 +1,40 @@
 # Compiler and flags
 CC = gcc
-CFLAGS = -Iinclude -Wall -Wextra -std=c99 -lm
+CFLAGS = -Iinclude -Wall -Wextra -std=c99
+LDFLAGS = -lm
 
-# File paths
+# Source files
 CANVAS_SRC = src/canvas.c
-CANVAS_DEMO = demo/main.c
-CANVAS_OUT = canvas_demo
-
 MATH_SRC = src/math3d.c
-MATH_DEMO = demo/test_math.c
+RENDER_SRC = src/renderer.c
+
+# Demos
+CANVAS_DEMO = demo/main.c
+MATH_DEMO = tests/test_math.c
+RENDER_DEMO = demo/render_main.c
+
+# Executables
+CANVAS_OUT = canvas_demo
 MATH_OUT = test_math
+RENDER_OUT = render_demo
 
-.PHONY: all clean run_canvas run_math
+# Phony targets
+.PHONY: all clean run_canvas run_math run_render
 
-# Default build all demos
-all: $(CANVAS_OUT) $(MATH_OUT)
+# Default target
+all: $(CANVAS_OUT) $(MATH_OUT) $(RENDER_OUT)
 
-# Canvas demo
+# Build canvas demo
 $(CANVAS_OUT): $(CANVAS_SRC) $(CANVAS_DEMO)
-	$(CC) $(CFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
 
-# Math demo
+# Build math demo
 $(MATH_OUT): $(MATH_SRC) $(MATH_DEMO)
-	$(CC) $(CFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
+
+# Build renderer demo
+$(RENDER_OUT): $(CANVAS_SRC) $(MATH_SRC) $(RENDER_SRC) $(RENDER_DEMO)
+	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
 
 # Run canvas demo
 run_canvas: $(CANVAS_OUT)
@@ -32,7 +44,10 @@ run_canvas: $(CANVAS_OUT)
 run_math: $(MATH_OUT)
 	./$(MATH_OUT)
 
-# Clean builds
-clean:
-	rm -f $(CANVAS_OUT) $(MATH_OUT)
+# Run render demo
+run_render: $(RENDER_OUT)
+	./$(RENDER_OUT)
 
+# Clean build files
+clean:
+	rm -f $(CANVAS_OUT) $(MATH_OUT) $(RENDER_OUT)

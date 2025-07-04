@@ -64,6 +64,7 @@ void draw_line_f(Canvas* canvas, float x0, float y0, float x1, float y1, float t
     }
 }
 
+
 // Allocate and initialize a new canvas
 Canvas* create_canvas(int width, int height) {
     Canvas* canvas = (Canvas*)malloc(sizeof(Canvas));

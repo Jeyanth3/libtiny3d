@@ -25,5 +25,6 @@ mat4_t mat4_translate(float tx, float ty, float tz);
 mat4_t mat4_scale(float sx, float sy, float sz);
 mat4_t mat4_rotate_xyz(float rx, float ry, float rz);
 mat4_t mat4_frustum_asymmetric(float l, float r, float b, float t, float n, float f);
+mat4_t mat4_mul(mat4_t a, mat4_t b);
 
 #endif
