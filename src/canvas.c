@@ -1,7 +1,9 @@
+#include <stdio.h>
 #include <math.h>
 #include "canvas.h"
 #include <math.h>
 #include <stdlib.h>
+
 
 // Clamp brightness to [0.0, 1.0]
 static float clamp(float value) {
@@ -104,4 +106,40 @@ void free_canvas(Canvas* canvas) {
 
     free(canvas->pixels);
     free(canvas);
+}
+
+// Initialize an in-place canvas (non-pointer version)
+void canvas_init(Canvas* canvas, int width, int height) {
+    canvas->width = width;
+    canvas->height = height;
+
+    canvas->pixels = (float**)malloc(height * sizeof(float*));
+    for (int y = 0; y < height; ++y) {
+        canvas->pixels[y] = (float*)calloc(width, sizeof(float));
+    }
+}
+
+// Free an in-place canvas (non-pointer version)
+void canvas_free(Canvas* canvas) {
+    for (int y = 0; y < canvas->height; ++y) {
+        free(canvas->pixels[y]);
+    }
+    free(canvas->pixels);
+}
+
+// Save canvas to a grayscale PGM image file
+void canvas_save(Canvas* canvas, const char* filename) {
+    FILE* fp = fopen(filename, "w");
+    if (!fp) return;
+
+    fprintf(fp, "P2\n%d %d\n255\n", canvas->width, canvas->height);
+    for (int y = 0; y < canvas->height; ++y) {
+        for (int x = 0; x < canvas->width; ++x) {
+            int gray = (int)(canvas->pixels[y][x] * 255.0f);
+            fprintf(fp, "%d ", gray);
+        }
+        fprintf(fp, "\n");
+    }
+
+    fclose(fp);
 }

@@ -158,3 +158,15 @@ vec3_t mat4_transform_vec3(mat4_t m, vec3_t v) {
     vec3_update_spherical(&result);
     return result;
 }
+
+vec3_t vec3_init(float x, float y, float z) {
+    vec3_t v = {x, y, z, 0, 0, 0};
+    v.r = sqrtf(x * x + y * y + z * z);
+    if (v.r > 0) {
+        v.theta = acosf(z / v.r);
+        v.phi = atan2f(y, x);
+    }
+    return v;
+}
+
+

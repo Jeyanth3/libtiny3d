@@ -26,4 +26,9 @@ mat4_t mat4_frustum_asymmetric(float l, float r, float b, float t, float n, floa
 // Transform vec3 using mat4
 vec3_t mat4_transform_vec3(mat4_t m, vec3_t v);
 
+// Apply 4x4 matrix to a vec3 (with w = 1)
+vec3_t mat4_transform_vec3(mat4_t m, vec3_t v);
+
+vec3_t vec3_init(float x, float y, float z);
+
 #endif
