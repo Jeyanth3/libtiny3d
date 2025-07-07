@@ -20,7 +20,7 @@ MATH_OUT = test_math
 RENDER_OUT = render_demo
 
 # Phony targets
-.PHONY: all clean run_main run_math run_render frames
+.PHONY: all clean run_main run_math run_render frames gif
 
 # Default target
 all: $(MAIN_OUT) $(MATH_OUT) $(RENDER_OUT)
@@ -37,12 +37,22 @@ $(MATH_OUT): $(MATH_SRC) $(MATH_DEMO)
 $(RENDER_OUT): $(CANVAS_SRC) $(MATH_SRC) $(RENDER_SRC) $(RENDER_DEMO)
 	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
 
-# Run animation generator
+# Run animation generator (generates .pgm frames)
 run_main: $(MAIN_OUT)
 	./$(MAIN_OUT)
 
 # Shortcut to generate animation frames
 frames: run_main
+
+# Collect all generated frame files matching pattern
+PGM_FRAMES := $(wildcard soccer_*.pgm)
+
+# Target to create the animated GIF from frames
+soccer_ball.gif: $(PGM_FRAMES)
+	convert -delay 5 -loop 0 soccer_*.pgm soccer_ball.gif
+
+# Shortcut to generate frames and create GIF
+gif: frames soccer_ball.gif
 
 # Run math test
 run_math: $(MATH_OUT)
@@ -52,6 +62,6 @@ run_math: $(MATH_OUT)
 run_render: $(RENDER_OUT)
 	./$(RENDER_OUT)
 
-# Clean
+# Clean generated files
 clean:
-	rm -f $(MAIN_OUT) $(MATH_OUT) $(RENDER_OUT) *.pgm
+	rm -f $(MAIN_OUT) $(MATH_OUT) $(RENDER_OUT) *.pgm soccer_ball.gif
