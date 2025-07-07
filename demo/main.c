@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -48,6 +47,7 @@ int main() {
         draw_line_f(clock_canvas, center_x, center_y, end_x, end_y, thickness);
     }
 
+
     save_canvas_to_pgm(clock_canvas, "clock_lines.pgm");
     printf("Clock face saved to clock_lines.pgm\n");
     canvas_free(clock_canvas);
@@ -65,6 +65,12 @@ int main() {
         vec3_init(-1, -1,  1), vec3_init(1, -1,  1),
         vec3_init(1,  1,  1), vec3_init(-1,  1,  1)
     };
+
+    printf("Cube vertex coordinates:\n");
+    for (int i = 0; i < 8; ++i) {
+        printf("Vertex %d: (%.3f, %.3f, %.3f)\n", i,
+            vertices[i].x, vertices[i].y, vertices[i].z);
+    }
 
     int edges[][2] = {
         {0, 1}, {1, 2}, {2, 3}, {3, 0},

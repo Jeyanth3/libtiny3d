@@ -1,6 +1,6 @@
 # Compiler and flags
 CC = gcc
-CFLAGS = -Iinclude -Wall -Wextra -std=c99
+CFLAGS = -Iinclude -std=c99
 LDFLAGS = -lm
 
 # Source files
