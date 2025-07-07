@@ -83,12 +83,6 @@ int main() {
     canvas_free(cube_canvas);
 
     // ========== Soccer Ball Rendering ==========
-    vec3_t* soccer_vertices;
-    int soccer_vertex_count;
-    int (*soccer_edges)[2];
-    int soccer_edge_count;
-
-    generate_soccer_ball(&soccer_vertices, &soccer_vertex_count, &soccer_edges, &soccer_edge_count);
 
     Canvas* soccer_canvas = create_canvas(width, height);
     if (!soccer_canvas) {
@@ -96,18 +90,29 @@ int main() {
         return 1;
     }
 
-    mat4_t soccer_model = mat4_rotate_xyz(0.0f, 0.0f, 0.0f);
-    mat4_t soccer_view = mat4_translate(0.0f, 0.0f, -5.0f);
-    mat4_t soccer_projection = mat4_frustum_asymmetric(-1, 1, -1, 1, 1, 10);
+    vec3_t* soccer_vertices = NULL;
+    int soccer_vertex_count = 0;
+    int (*soccer_edges)[2] = NULL;
+    int soccer_edge_count = 0;
 
-    render_wireframe(soccer_canvas, soccer_vertices, soccer_vertex_count, soccer_edges, soccer_edge_count,
-                     soccer_model, soccer_view, soccer_projection);
-    canvas_save(soccer_canvas, "soccerball.pgm");
-    printf("Soccer ball saved to soccerball.pgm\n");
+    generate_soccer_ball(&soccer_vertices, &soccer_vertex_count, &soccer_edges, &soccer_edge_count);
 
-    canvas_free(soccer_canvas);
+    
+    float aspect_ratio = (float)width / height;
+    mat4_t soccer_proj = mat4_frustum_asymmetric(-aspect_ratio, aspect_ratio, -1.0f, 1.0f, 1.0f, 10.0f);
+    mat4_t soccer_model = mat4_identity(); // no rotation
+    mat4_t soccer_view = mat4_translate(0.0f, 0.0f, -4.0f);
+    
+    
+    render_wireframe(soccer_canvas, soccer_vertices, soccer_vertex_count, soccer_edges, soccer_edge_count,soccer_model, soccer_view, soccer_proj);
+
+    canvas_save(soccer_canvas, "soccer.pgm");
+    printf("Soccer ball saved to soccer.pgm\n");
+
     free(soccer_vertices);
     free(soccer_edges);
+    canvas_free(soccer_canvas);
+
 
     return 0;
 }

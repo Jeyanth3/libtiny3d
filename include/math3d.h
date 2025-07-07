@@ -16,6 +16,12 @@ vec3_t vec3_from_spherical(float r, float theta, float phi);
 vec3_t vec3_normalize_fast(vec3_t v);
 vec3_t vec3_slerp(vec3_t a, vec3_t b, float t);
 
+
+static inline vec3_t vec3_xyz(float x, float y, float z) {
+    vec3_t v = {x, y, z, 0.0f, 0.0f, 0.0f};
+    return v;
+}
+
 // MAT4 operations
 mat4_t mat4_identity();
 mat4_t mat4_translate(float tx, float ty, float tz);
