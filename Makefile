@@ -20,12 +20,12 @@ MATH_OUT = test_math
 RENDER_OUT = render_demo
 
 # Phony targets
-.PHONY: all clean run_main run_math run_render
+.PHONY: all clean run_main run_math run_render frames
 
 # Default target
 all: $(MAIN_OUT) $(MATH_OUT) $(RENDER_OUT)
 
-# Build final main demo (clock + cube + soccer ball)
+# Build final soccer ball animation generator
 $(MAIN_OUT): $(CANVAS_SRC) $(MATH_SRC) $(RENDER_SRC) $(SOCCERBALL_SRC) $(MAIN_DEMO)
 	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
 
@@ -37,16 +37,21 @@ $(MATH_OUT): $(MATH_SRC) $(MATH_DEMO)
 $(RENDER_OUT): $(CANVAS_SRC) $(MATH_SRC) $(RENDER_SRC) $(RENDER_DEMO)
 	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
 
-# Run demos
+# Run animation generator
 run_main: $(MAIN_OUT)
 	./$(MAIN_OUT)
 
+# Shortcut to generate animation frames
+frames: run_main
+
+# Run math test
 run_math: $(MATH_OUT)
 	./$(MATH_OUT)
 
+# Run renderer demo
 run_render: $(RENDER_OUT)
 	./$(RENDER_OUT)
 
 # Clean
 clean:
-	rm -f $(MAIN_OUT) $(MATH_OUT) $(RENDER_OUT)
+	rm -f $(MAIN_OUT) $(MATH_OUT) $(RENDER_OUT) *.pgm

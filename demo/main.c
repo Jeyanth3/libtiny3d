@@ -105,7 +105,20 @@ int main() {
     
     
     render_wireframe(soccer_canvas, soccer_vertices, soccer_vertex_count, soccer_edges, soccer_edge_count,soccer_model, soccer_view, soccer_proj);
+    
+    char filename[64];
+    for (int frame = 0; frame < 60; ++frame) {
+        float angle = frame * (2.0f * M_PI / 60);  // One full rotation
+        mat4_t soccer_model = mat4_rotate_xyz(0.0f, angle, 0.0f);  // Y-axis rotation
 
+        Canvas* frame_canvas = create_canvas(width, height);
+        render_wireframe(frame_canvas, soccer_vertices, soccer_vertex_count,
+                        soccer_edges, soccer_edge_count, soccer_model, soccer_view, soccer_proj);
+
+        sprintf(filename, "soccer_%03d.pgm", frame);
+        canvas_save(frame_canvas, filename);
+        canvas_free(frame_canvas);
+    }
     canvas_save(soccer_canvas, "soccer.pgm");
     printf("Soccer ball saved to soccer.pgm\n");
 
